@@ -80,27 +80,50 @@ plt.show()
 DAVS=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Espectrocopia laser\Dia 2\Con campo\Ventana-DAVS-conB-22C-1.6mA-0.1kHz-250us-200mV.txt')
 davs=np.loadtxt(DAVS)
 
+LOC=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Espectrocopia laser\Dia 2\Con campo\Ventana-DAVS-conB-22C-1.6mA-0.1kHz-250us-200mV.txt')
+loc=np.loadtxt(LOC)
+
+
+DAVSsinB=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Espectrocopia laser\Dia 2\Sin campo\Ventana-DAVS-sinB-22C-1.6mA-0.1kHz-250us-50mV.txt')
+davss=np.loadtxt(DAVSsinB)
+
 tdavs=davs[0]
 Vdavs=davs[1]
 
+tdavss=davss[0]
+Vdavss=davss[1]/4
+
+
 plt.figure()
 plt.plot(tdavs,Vdavs)
+plt.plot(tdavss,Vdavss)
 plt.xlabel('Tiempo (s)')
 plt.ylabel('Voltaje (V)')
 plt.show()
 
+puntos = plt.ginput(2)
+puntos = np.array(puntos)
+
+
 #%%
 
 wdavs=A*tdavs+B-dif
+wdavss=A*tdavss+B-dif
+pt0,pt1=A*puntos[0][0]+B-dif,puntos[0][1]+0.2
+pf0,pf1=A*puntos[1][0]+B-dif,puntos[1][1]+0.2
 
 plt.figure()
-plt.plot(wdavs,Vdavs)
+plt.plot(wdavs,Vdavs+0.2,label='Con campo',zorder=2)
+plt.plot(wdavss,Vdavss,label='Sin campo',zorder=1)
+plt.scatter(pt0,pt1,zorder=3,color='r')
+plt.scatter(pf0,pf1,zorder=3,color='r')
 plt.ylabel('Voltaje (V)')
 plt.xlabel('Frecuencia (THz)')
-plt.axvline(w_abs[0],linestyle='dashed',color='r',label='R87 excitado')
-plt.axvline(w_abs[1],linestyle='dashed',color='r',label='R85 excitado')
-plt.axvline(w_abs[2],linestyle='dashed',color='r',label='R85 fund')
-plt.axvline(w_abs[3],linestyle='dashed',color='r',label='R87 fund')
+#plt.axvline(w_abs[0],color='r',linestyle='dashed',label='Rb-87: F=2 → F=1')
+#plt.axvline(w_abs[1],color='g',linestyle='dashed',label='Rb-85: F=3 → F=2')
+#plt.axvline(w_abs[2],color='g',linestyle='dashed',label='Rb-85: F=2 → F=3')
+#plt.axvline(w_abs[3],color='r',linestyle='dashed',label='Rb-87: F=1 → F=2')
+plt.title('Señal DAVS')
 plt.legend(loc='upper left')
 plt.show()
 
