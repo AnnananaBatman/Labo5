@@ -116,9 +116,9 @@ vx1,vy1=pvx1*esct1/escp, pvy1*esct1/escp
 
 #junto los dos archivos de 5050 bien centradas y calibradas separadamente  (tienen distinto fps)
 
-x,y,vx,vy=np.concatenate((x0, x1)), np.concatenate((y0, y1)), np.concatenate((vx0, vx1)), np.concatenate((vy0, vy1))
+#x,y,vx,vy=np.concatenate((x0, x1)), np.concatenate((y0, y1)), np.concatenate((vx0, vx1)), np.concatenate((vy0, vy1))
 
-#x,y,vx,vy=(pxa-xa)/escp, (pya-ya)/escp, pvxa*esct0/escp, pvya*esct0/escp
+x,y,vx,vy=(pxa-xa)/escp, (pya-ya)/escp, pvxa*esct0/escp, pvya*esct0/escp
 
 #%%
 
@@ -239,7 +239,7 @@ plt.plot(M_rt[:,0], M_rt[:,3], '.',label='En polar y centrado')
 plt.plot(matrizProm_Rp_Vtp[:,0],matrizProm_Rp_Vtp[:,1], '.', label='centrado promediado angular')
 plt.xlabel("Radios [cm]", fontsize=15)
 plt.ylabel("Velocidad tangencial [cm/s]", fontsize = 15)
-plt.title('50:50')
+plt.title('agua')
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.legend()
@@ -291,7 +291,7 @@ rD_prom = np.linspace(min(subMatrix[:,0]),max(subMatrix[:,0]),len(subMatrix[:,0]
 perr_prom=np.diag(pcov_prom)
 
 plt.figure()
-plt.title('V_tangencial(r) 50:50')
+plt.title('V_tangencial(r) agua')
 #plt.plot(matrizProm_Rp_Vtp[:,0], matrizProm_Rp_Vtp[:,1], '.',label='datos')
 plt.errorbar(matrizProm_Rp_Vtp[:,0], matrizProm_Rp_Vtp[:,1], xerr = matrizProm_Rp_Vtp_sd[:,0], yerr =matrizProm_Rp_Vtp_sd[:,1],fmt='.',label='datos')
 plt.plot(rD_prom,func(rD_prom,*popt_prom), label='ajuste')
@@ -320,6 +320,11 @@ p=1-stats.chi2.cdf(chi2stat,dof)
 
 print('Chi-square es', chi2stat)
 
+print('Gamma/2pi es', popt_prom[0],'+-', perr_prom[0])
+print('sqrt(4nu/alpha) es', popt_prom[1],'+-', perr_prom[1])
+print('CTE es', popt_prom[2],'+-', perr_prom[2])
+print('r0 es', popt_prom[3],'+-', perr_prom[3])
+
 #%%
 
 #probe quitando el r0 y no cambia mucho
@@ -339,3 +344,21 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.legend()
 
+#%%
+
+#Veo el vortice
+
+def vortice(x,a,b,c):
+    return 2*(a/b)*np.exp(-((x-c)**2/b**2))
+
+w=vortice(matrizProm_Rp_Vtp[:,0],popt_prom[0],popt_prom[1],popt_prom[3])
+
+
+plt.figure()
+plt.title('Vortice en z')
+plt.plot(matrizProm_Rp_Vtp[:,0], w, '.',label='datos')
+plt.xlabel("Radios [cm]", fontsize=15)
+plt.ylabel("Vorticidad [1/s]", fontsize = 15)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.legend()
