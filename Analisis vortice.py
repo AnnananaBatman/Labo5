@@ -47,8 +47,8 @@ plt.show()
 
 #Datos de ajuste de dif agitaciones
 
-ajustes=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\Dato ajustes.txt')
-rajuste= np.loadtxt(ajustes,delimiter= ',', skiprows= 1)
+ajustes=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\Dato ajustes nuevo.txt')
+rajuste= np.loadtxt(ajustes,delimiter= ',', skiprows= 0)
 
 chi2s=rajuste[:,8]
 chi2reds=rajuste[:,9]
@@ -56,27 +56,51 @@ gamma=2*np.pi*rajuste[:,11]
 egamma=2*np.pi*rajuste[:,12]
 rc=rajuste[:,13]
 erc=rajuste[:,14]
+r0=rajuste[:,17]
+er0=rajuste[:,18]
+
+rcs=np.array((rc[0],rc[1],rc[3],rc[4]))
+gammas=np.array((gamma[0],gamma[1],gamma[3],gamma[4]))/(2*np.pi)
+
+Omegas=gammas/(rcs**2)
+n=np.array((0,1,2,3))
+
+print(Omegas)
+
+plt.figure()
+plt.scatter(n,Omegas)
+plt.show()
+
+#%%
+
+popta=np.array((rajuste[4,11]/(2*np.pi),rajuste[4,13],rajuste[4,15]))
+popt27=np.array((rajuste[4,11]/(2*np.pi),rajuste[4,13],rajuste[4,15]))
+popt50=np.array((rajuste[4,11]/(2*np.pi),rajuste[4,13],rajuste[4,15]))
 
 #%%
 
 #Diferentes viscosidades
 
-r27,vt27,er27,evt27=r0,vt0,er0,evt0
+r27,vt27,er27,evt27=np.loadtxt(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\promedios 1.txt')
 ra,vta,era,evta=np.loadtxt(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\promedios agua.txt')
 r50,vt50,er50,evt50=np.loadtxt(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\promedios 50.txt')
 
-ra1=ra[17:110]-ra[17]
-vta1=vta[17:110]*2.2
+xdata=np.linspace(min(r27),6.5,len(r27)*20)
+
+def func(x,a,b,c):
+    return ((a/(x-c))*(1 - np.exp(-((x-c)**2/b**2))))
 
 #esta medio cualqeuira esto, medir de nuevo ya fue 
 plt.figure()
-plt.scatter(ra1,vta1,label='Agua',color='r',zorder=1,s=10)
-plt.scatter(r27,vt27,label='Glicerina 27.2 %',color='cornflowerblue',zorder=1,s=10)
-plt.scatter(r50,vt50,label='Glicerina 50%',color='green',zorder=1,s=10)
+plt.errorbar(ra,vta,xerr=era,yerr=evta,label='Datos agua',color='r',zorder=1,fmt='.')
+plt.errorbar(r27,vt27,xerr=er27,yerr=evt27,label='Glicerina 27.2 %',color='cornflowerblue',zorder=1,fmt='.')
+plt.errorbar(r50,vt50,xerr=er50,yerr=evt50,label='Glicerina 50%',color='green',zorder=1,fmt='.')
+plt.plot(xdata,func(xdata,*popta),label='Ajuste agua',color='b',zorder=2)
 plt.legend(loc='upper right')
 plt.xlabel("Radios [cm]", fontsize=13)
 plt.ylabel("Velocidad tangencial [cm/s]", fontsize = 13)
 plt.title('$V_θ$(r) - varias soluciones')
+plt.xlim(-0.3,7)
 plt.show() 
 
 #%%

@@ -112,16 +112,16 @@ plt.show()
 #escp_error=0.3961946214313535*10
 
 #Calibracion dia 2
-#escp=29.93713202275223/5*10 #px por cm
-#escp_error=0.13440475595279747*10
+escp=29.93713202275223/5*10 #px por cm
+escp_error=0.13440475595279747*10
 
 #Calibracion dia 3: dos vortices
 #escp=21.55473505638159
 #escp_error=0.23189202751466623
 
 #Calibracion dia 3: sumidero
-escp=31.34482526881721
-escp_error=0.30160302831451574
+#escp=31.34482526881721
+#escp_error=0.30160302831451574
 
 #%%
 
@@ -248,8 +248,8 @@ def homogVr_R(MRT, p):
 #Abro archivos a analizar
 
 #promedio0=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\PIVlab promedio agua.txt')
-promedio0=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 3\PIVlabsumideroultimo.txt')
-archivo='27.2 % - sumidero'
+promedio0=open(r'C:\Users\luo\OneDrive\文档\Labo 5\Fluidos\Dia 2\27.2\PIVlab.27.2.1.txt')
+archivo='27.2 % - vortice 1'
 
 matrizXY0 = np.loadtxt(promedio0,delimiter= ',', skiprows= 3, usecols = (0,1,2,3))
 
@@ -263,6 +263,10 @@ pvx0,pvy0=matrizXY0[:,2], matrizXY0[:,3] #valores de vx y vy
 
 plt.figure()
 plt.quiver(px0,py0,pvx0,pvy0)
+plt.xlabel('X [pixel]',fontsize=14)
+plt.ylabel('Y [pixel]',fontsize=14)
+plt.title('{}'.format(archivo))
+
 
 #%%
 
@@ -275,7 +279,6 @@ ex0,ey0=0,0
 esct=34.4321 #cambiar esto con la calibracion tiempo vs frame despues, por ahora tengo la automatica de 53 fps
 esct_error=34.4321-60/(5.16-2.85)
 
-px,py,pvx,pvy=(px0-x0)/escp, (py0-y0)/escp, pvx0*esct/escp, pvy0*esct/escp
 epx0,epy0,epvx0,epvy0=0,0,0,0
 
 x,y,vx,vy=(px0-x0)/escp, (py0-y0)/escp, pvx0*esct/escp, pvy0*esct/escp
@@ -300,9 +303,9 @@ M_xy,eM_xy=Mxy.T, eMxy.T
 #obtengo las dos matrices a ajustar, la OG en polares y la promediada de la OG
 M_rt,eM_rt = converTo_polares(M_xy,eM_xy)
 
-matrizProm_Rp_Vtp,matrizProm_Rp_Vtp_sd = homogVtan_R(M_rt, 50)
-matrizProm_Rp_Vtp_ev,matrizProm_Rp_Vtp_ev_sd = homogVtan_R(eM_rt, 50)
-matrizProm_Rp_Vrp,matrizProm_Rp_Vrp_sd = homogVr_R(M_rt, 50)
+matrizProm_Rp_Vtp,matrizProm_Rp_Vtp_sd = homogVtan_R(M_rt, 110)
+matrizProm_Rp_Vtp_ev,matrizProm_Rp_Vtp_ev_sd = homogVtan_R(eM_rt, 110)
+matrizProm_Rp_Vrp,matrizProm_Rp_Vrp_sd = homogVr_R(M_rt, 110)
 
 #%%
 
@@ -323,9 +326,15 @@ matrizProm_Rp_Vrp[d_nan,1]=0
 
 #%%
 
+'''
 #burgerking
 def func(x,a,b,c,d):
     return ((a/(x-d))*(1 - np.exp(-((x-d)**2/b**2))))+c
+
+'''
+
+def func(x,a,b,c):
+    return ((a/(x-c))*(1 - np.exp(-((x-c)**2/b**2))))
 
 #%%
 
@@ -358,7 +367,7 @@ plt.legend(loc='upper right')
 #fijo rmax para deshacerme de efecto de borde
 
 rmin= 0.0 #max o menos a ojo 
-rmax= 5.5
+rmax= 6.5
 
 #filtro y tomo el rango entre rmin y rmax para el ajuste
 subMatrix0 = matrizProm_Rp_Vtp[matrizProm_Rp_Vtp[:,0] >rmin]
@@ -399,8 +408,8 @@ print('Chi-square es', chisquare)
 print('Chi-square reducido es', chi2red)
 print('Gamma es', gamma,'+-', egamma)
 print('rc o sqrt(4nu/alpha) es', popt_prom[1],'+-', perr_prom[1])
-print('CTE es', popt_prom[2],'+-', perr_prom[2])
-print('r0 es', popt_prom[3],'+-', perr_prom[3])
+print('r0 es', popt_prom[2],'+-', perr_prom[2])
+#print('CTE es', popt_prom[3],'+-', perr_prom[3])
 
 
 
